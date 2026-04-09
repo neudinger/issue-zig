@@ -4,6 +4,10 @@ bazel_dep(name = "rules_zig", version = "0.12.2")
 
 zig = use_extension("@rules_zig//zig:extensions.bzl", "zig")
 zig.index(file = "//:zig_index.json")
+
+# Compiler segfaults
+# 
+# ./update_zig_index.sh 0.16.0-dev.3132+fd2718f82
 zig.toolchain(zig_version = "0.16.0-dev.3132+fd2718f82")
 
 use_repo(zig, "zig_toolchains")

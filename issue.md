@@ -2,7 +2,7 @@
 
 ## Summary
 
-`@setEvalBranchQuota` above a threshold (~1850) causes the compiler to segfault (stack overflow) when a comptime function recursively walks a self-referential struct via `@typeInfo`. Below the threshold the backwards-branch limit fires correctly with a clean error. This is a regression.
+`@setEvalBranchQuota` above a threshold (~1850) causes the compiler to segfault (stack overflow) when a comptime function recursively walks a self-referential struct via `@typeInfo`. Below the threshold the backwards-branch limit fires correctly with a clean error.
 
 ## Reproducer
 
@@ -28,13 +28,6 @@ pub fn main() void {}
 $ zig build-exe repro.zig
 Segmentation fault (core dumped)
 ```
-
-## Regression range
-
-| Status | Commit |
-|--------|--------|
-| **OK** | [`f16eb18ce8c24`](https://codeberg.org/ziglang/zig/commit/f16eb18ce8c24) |
-| **BAD** | [`fd2718f82ab70`](https://codeberg.org/ziglang/zig/commit/fd2718f82ab70) |
 
 ## Environment
 
@@ -62,10 +55,9 @@ The backwards-branch check should catch this regardless of quota. Instead, when 
 
 The compiler should produce *"evaluation exceeded N backwards branches"* for any value of `@setEvalBranchQuota`. It should never segfault.
 
-
 ## How to reproduce
 
-This directory is a self-contained Bazel workspace (no ZML dependency).
+This directory is a self-contained Bazel workspace.
 
 ### Prerequisites — install Bazelisk
 
@@ -84,10 +76,22 @@ chmod +x /usr/local/bin/bazel
 
 ### Build (triggers the segfault)
 
+Run at least once for bazel to download the zig compiler
+
 ```bash
 cd issue-zig
-bazel build //issue
+# bazel clean --expunge # May be used to ensure reproductibility 
+bazel build //:issue
 ```
+
+Use the sandboxed zig compiler directly
+
+```bash
+bazel-issue-zig/external/rules_zig++zig+zig_0.16.0-dev.3132_Pfd2718f82_x86_64-linux/zig build-exe zig-src/repro_simple.zig
+```
+
+Output:
+> Segmentation fault (core dumped)
 
 Bazel will download Zig `0.16.0-dev.3132+fd2718f82` via `rules_zig` and attempt to compile the reproducer. The compiler will segfault during compilation.
 
@@ -104,3 +108,19 @@ issue-zig/
 └── zig-src/
     └── repro_simple.zig # 12-line reproducer
 ```
+
+## To test with other zig version
+
+Update the [MODULE.bazel](./MODULE.bazel)
+
+```python
+# zig.toolchain(zig_version = "0.16.0-dev.3132+fd2718f82")
+zig.toolchain(zig_version = "0.16.0-dev.XXXX+HASH")
+```
+
+```bash
+./update_zig_index.sh 0.16.0-dev.XXXX+HASH
+bazel clean # May be used to ensure reproductibility 
+bazel build //:issue
+```
+

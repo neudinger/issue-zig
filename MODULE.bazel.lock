@@ -232,7 +232,7 @@
         "bzlTransitiveDigest": "ROLofAjGyW3BNygvljY0Nwv03ITz6eLdWxTAiS57Aec=",
         "usagesDigest": "sngfPq6hJpZHsWTQqbJk4DWjlukDaA/eOXqLI+azxVc=",
         "recordedFileInputs": {
-          "@@//zig_index.json": "6c0e60f207bb8e866b61d4cd2830e866fc323853818f506f0cfaf9e2a1e5a327",
+          "@@//zig_index.json": "4b64c17de8d514ea78ce7699231b656e27d3c87a38b31952838233f615daebb4",
           "@@rules_zig+//zig/private/versions.json": "3afa7e1c4af939bdb64eff3f65908bb57f2b0e46b5636e6ed15ad79256c9436f"
         },
         "recordedDirentsInputs": {},
